@@ -36,6 +36,13 @@ func main() {
 	}
 
 	fmt.Printf("https://ipfs.io/ipfs/%s\n", cid)
+
+	res, err := client.Get(ctx, cid)
+	if err != nil {
+		panic(err)
+	}
+
+	res.Files()
 }
 
 func writeFileInMemory(data []byte) (fs.File, error) {
