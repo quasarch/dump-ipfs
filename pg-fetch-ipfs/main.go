@@ -68,4 +68,5 @@ func main() {
 		fmt.Printf("Data CID: %s\n", d.DataCid)
 		fmt.Printf("Data Model: %s\n", d.DataModelSelector)
 	}
+
 }
