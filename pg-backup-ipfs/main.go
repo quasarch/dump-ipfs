@@ -94,7 +94,7 @@ func createTable(db *sql.DB) {
 	// , filename, ipfs-url
 	query := `
 		CREATE TABLE IF NOT EXISTS ipfs_dumps (
-			 INTEGER INTEGER PRIMARY KEY,
+			timestamp INTEGER PRIMARY KEY,
 			filename TEXT NOT NULL,
 			ipfs_url TEXT NOT NULL
 		)
