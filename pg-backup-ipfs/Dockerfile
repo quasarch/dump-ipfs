@@ -25,7 +25,4 @@ RUN addgroup -g 1000 -S agnt && \
 COPY --from=build_pg-backup-ipfs --chown=agnt:agnt /service/pg-backup-ipfs /service/pg-backup-ipfs
 WORKDIR /service
 USER agnt
-ARG DB_URL
-ARG DB_USER
-ARG DB_PASSWORD
-CMD ["./pg-backup-ipfs", "<" ,"pg_dump", "-U", $(DB_USER), "-p", ]
+CMD ["./pg-backup-ipfs"]

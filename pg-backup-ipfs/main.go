@@ -27,7 +27,8 @@ type PostgresConfig struct {
 
 func main() {
 	// postgresql://username:password@localhost:5432/database_name
-	connStrs := os.Args[1:]
+	cronStr := os.Args[1]
+	connStrs := os.Args[2:]
 
 	client, err := w3s.NewClient(w3s.WithToken(os.Getenv("API_KEY")))
 	if err != nil {
@@ -35,7 +36,7 @@ func main() {
 	}
 
 	c := cron.New(cron.WithSeconds())
-	_, err = c.AddFunc("*/2 * * * * *", func() {
+	_, err = c.AddFunc(cronStr, func() {
 		for _, conn := range connStrs {
 			result, err := dumpDB(conn)
 			if err != nil {

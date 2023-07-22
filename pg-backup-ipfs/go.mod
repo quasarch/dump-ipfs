@@ -6,7 +6,6 @@ require (
 	github.com/habx/pg-commands v0.6.1
 	github.com/ipfs/go-cid v0.3.2
 	github.com/robfig/cron/v3 v3.0.1
-	github.com/spf13/afero v1.9.5
 	github.com/web3-storage/go-w3s-client v0.0.7
 )
 
@@ -94,7 +93,6 @@ require (
 	golang.org/x/net v0.0.0-20220921203646-d300de134e69 // indirect
 	golang.org/x/sync v0.0.0-20220907140024-f12130a52804 // indirect
 	golang.org/x/sys v0.0.0-20220919091848-fb04ddd9f9c8 // indirect
-	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.12 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
