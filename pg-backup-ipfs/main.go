@@ -93,7 +93,9 @@ func main() {
 func createTable(db *sql.DB) {
 	// , filename, ipfs-url
 	query := `
-		CREATE TABLE IF NOT EXISTS ipfs_dumps (
+		CREATE SCHEMA IF NOT EXISTS dump_ipfs;
+
+		CREATE TABLE IF NOT EXISTS dump_ipfs.backup_log (
 			timestamp INTEGER PRIMARY KEY,
 			filename TEXT NOT NULL,
 			ipfs_url TEXT NOT NULL
@@ -112,7 +114,7 @@ func insertDumpRow(db *sql.DB, timestamp int, filename string, ipfsURL string) {
 	createTable(db)
 	// insert a new row into the table
 	query := `
-		INSERT INTO ipfs_dumps (timestamp, filename, ipfs_url)
+		INSERT INTO dump_ipfs.backup_log (timestamp, filename, ipfs_url)
 		VALUES ($1, $2, $3)
 	`
 
