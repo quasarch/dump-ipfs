@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: eth-system
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: database-data
+  namespace: eth-system
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: database
+  namespace: eth-system
+spec:
+  selector:
+    matchLabels:
+      app: database
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: database
+    spec:
+      terminationGracePeriodSeconds: 60
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: database-data
+      containers:
+        - name: postgres
+          image: ghusta/postgres-world-db:2.10
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              cpu: "500m"
+              memory: 500Mi
+            limits:
+              cpu: "500m"
+              memory: 500Mi
+          ports:
+            - name: postgres
+              containerPort: 5432
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -h
+                - localhost
+                - -U
+                - world
+                - -d
+                - world-db
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -h
+                - localhost
+                - -U
+                - world
+                - -d
+                - world-db
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+        - name: ipfs-backup
+          image: pg-backup-ipfs:v0.0.1
+          env:
+            - name: API_KEY
+              value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGJGN2RCRTU5RkUyNzEyMzMyQTIzREU2MTE3NTUzNzY5MzE2ZjFENzUiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2OTAwMjEwNzE4NTcsIm5hbWUiOiJoYWNrYXRob24ifQ.NOvJIxbLrxAQvrG0Cp7F9ltmyZjT0EI_u8e28ruYFf4
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: database-service
+  namespace: eth-system
+spec:
+  type: ClusterIP
+  selector:
+    app: database
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres

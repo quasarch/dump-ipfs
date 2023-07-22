@@ -1,40 +1,46 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"github.com/spf13/afero"
-	"github.com/web3-storage/go-w3s-client"
-	"io"
+	w3s "github.com/web3-storage/go-w3s-client"
 	"io/fs"
+	"log"
 	"os"
 	"time"
 )
 
 func main() {
-	stdin, err := io.ReadAll(os.Stdin)
-	if err != nil {
-		panic(err)
+	scanner := bufio.NewScanner(os.Stdin)
+	if scanner.Scan() {
+		log.Println("Data on stdin...")
+		stdin := scanner.Text()
+
+		// Store in Filecoin with a timestamp.
+		client, err := w3s.NewClient(w3s.WithToken(os.Getenv("API_KEY")))
+		if err != nil {
+			panic(err)
+		}
+
+		file, err := writeFileInMemory([]byte(stdin))
+		if err != nil {
+			panic(err)
+		}
+
+		ctx := context.Background()
+		cid, err := client.Put(ctx, file)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("https://ipfs.io/ipfs/%s\n", cid)
 	}
 
-	// Store in Filecoin with a timestamp.
-	client, err := w3s.NewClient(w3s.WithToken(os.Getenv("API_KEY")))
-	if err != nil {
-		panic(err)
+	if err := scanner.Err(); err != nil {
+		log.Fatalln(err)
 	}
-
-	file, err := writeFileInMemory(stdin)
-	if err != nil {
-		panic(err)
-	}
-
-	ctx := context.Background()
-	cid, err := client.Put(ctx, file)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("https://ipfs.io/ipfs/%s\n", cid)
 }
 
 func writeFileInMemory(data []byte) (fs.File, error) {
