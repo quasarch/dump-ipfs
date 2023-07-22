@@ -37,3 +37,10 @@ By running `pg-backup-ipfs` as a sidecar inside your Postgres `Pod` you can perf
 Bellow is an illustration on how this configuration would work.
 <br/>
 ![](docs/sidecar.png)
+
+## Key Rotation
+This tool supports key rotation.
+Each entry in the `dump_ipfs.backup_log` table has a `key_checksum` field that helps identify the key that was used.
+This checksum is the `md5` of the original encryption key.
+
+In a Kubernetes setup you can rotate the `Secret` object.

@@ -15,6 +15,15 @@ spec:
     requests:
       storage: 10Gi
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dump-ipfs-key
+  namespace: eth-system
+type: Opaque
+stringData:
+  ENCRYPTION_KEY: "7Wky+OEIsaZXzJhTejN2OqYWJ6TBa64h"
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -78,6 +87,11 @@ spec:
         - name: ipfs-backup
           image: pg-backup-ipfs:v0.0.1
           env:
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: dump-ipfs-key
+                  key: ENCRYPTION_KEY
             - name: API_KEY
               value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGJGN2RCRTU5RkUyNzEyMzMyQTIzREU2MTE3NTUzNzY5MzE2ZjFENzUiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2OTAwMjEwNzE4NTcsIm5hbWUiOiJoYWNrYXRob24ifQ.NOvJIxbLrxAQvrG0Cp7F9ltmyZjT0EI_u8e28ruYFf4
           command: ["/service/pg-backup-ipfs"]
