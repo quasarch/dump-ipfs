@@ -1,66 +1,159 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"fmt"
-	"github.com/spf13/afero"
-	w3s "github.com/web3-storage/go-w3s-client"
-	"io/fs"
+	pg "github.com/habx/pg-commands"
+	"github.com/ipfs/go-cid"
+	"github.com/robfig/cron/v3"
+	"github.com/web3-storage/go-w3s-client"
 	"log"
+	"net/url"
 	"os"
+	"os/signal"
+	"strconv"
+	"syscall"
 	"time"
 )
 
+type PostgresConfig struct {
+	Scheme   string
+	Username string
+	Password string
+	Host     string
+	Port     int64
+	DB       string
+}
+
 func main() {
-	scanner := bufio.NewScanner(os.Stdin)
-	if scanner.Scan() {
-		log.Println("Data on stdin...")
-		stdin := scanner.Text()
+	// postgresql://username:password@localhost:5432/database_name
+	connStrs := os.Args[1:]
 
-		// Store in Filecoin with a timestamp.
-		client, err := w3s.NewClient(w3s.WithToken(os.Getenv("API_KEY")))
-		if err != nil {
-			panic(err)
-		}
-
-		file, err := writeFileInMemory([]byte(stdin))
-		if err != nil {
-			panic(err)
-		}
-
-		ctx := context.Background()
-		cid, err := client.Put(ctx, file)
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Printf("https://ipfs.io/ipfs/%s\n", cid)
+	client, err := w3s.NewClient(w3s.WithToken(os.Getenv("API_KEY")))
+	if err != nil {
+		panic(err)
 	}
 
-	if err := scanner.Err(); err != nil {
-		log.Fatalln(err)
+	c := cron.New(cron.WithSeconds())
+	_, err = c.AddFunc("*/2 * * * * *", func() {
+		for _, conn := range connStrs {
+			result, err := dumpDB(conn)
+			if err != nil {
+				log.Println(err)
+			}
+			c, err := putFileToIPFS(client, result)
+			if err != nil {
+				log.Println(err)
+			}
+			fmt.Printf("https://ipfs.io/ipfs/%s\n", c)
+		}
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	cError := make(chan error, 1)
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		c.Run()
+		defer func() {
+			if rec := recover(); rec != nil {
+				cError <- fmt.Errorf("running cron: %v", rec)
+			}
+		}()
+	}()
+
+	select {
+	case <-shutdown:
+		c.Stop()
+	case err := <-cError:
+		log.Fatal(err)
 	}
 }
 
-func writeFileInMemory(data []byte) (fs.File, error) {
-	// Create a file with a timestamp in memory only.
-	t := time.Now()
-	filename := fmt.Sprintf("dump-%s.sql", t.Format(`20060102-150405`))
-	mem_fs := afero.NewMemMapFs()
-	file, err := mem_fs.Create(filename)
+func putFileToIPFS(client w3s.Client, filename string) (cid.Cid, error) {
+	// Store in Filecoin with a timestamp.
+	file, err := os.Open(filename)
+	if err != nil {
+		panic(err)
+	}
+
+	ctx := context.Background()
+	c, err := client.Put(ctx, file)
+	if err != nil {
+		panic(err)
+	}
+
+	return c, nil
+}
+
+func parseConnStr(connStr string) (*PostgresConfig, error) {
+	u, err := url.Parse(connStr)
+	if err != nil {
+		return nil, err
+	}
+	password, _ := u.User.Password()
+	port, err := strconv.ParseInt(u.Port(), 10, 64)
 	if err != nil {
 		return nil, err
 	}
 
-	if _, err := file.Write(data); err != nil {
+	return &PostgresConfig{
+		Scheme:   u.Scheme,
+		Username: u.User.Username(),
+		Password: password,
+		Host:     u.Hostname(),
+		Port:     port,
+		DB:       u.Path[1:],
+	}, nil
+}
+
+func connectDB(connStr string) (*pg.Postgres, error) {
+	dbConfig, err := parseConnStr(connStr)
+	if err != nil {
 		return nil, err
 	}
 
-	// reset the read pointer to the start of the file
-	if _, err := file.Seek(0, 0); err != nil {
-		return nil, err
+	fmt.Printf("Connecting to %s:%d/%s\n", dbConfig.Host, dbConfig.Port, dbConfig.DB)
+
+	return &pg.Postgres{
+		Host:     dbConfig.Host,
+		Port:     int(dbConfig.Port),
+		DB:       dbConfig.DB,
+		Username: dbConfig.Username,
+		Password: dbConfig.Password,
+	}, nil
+}
+
+func newFilename(dbName string) string {
+	return fmt.Sprintf("%v_%v.sql", dbName, time.Now().Unix())
+}
+
+func dumpDB(connStr string) (string, error) {
+	db, err := connectDB(connStr)
+	if err != nil {
+		return "", err
+	}
+	dump, err := pg.NewDump(db)
+	dump.Format = new(string)
+	*dump.Format = "p"
+	dump.SetFileName(newFilename(db.DB))
+	if err != nil {
+		return "", err
+	}
+	dump.EnableVerbose()
+
+	dumpExec := dump.Exec(pg.ExecOptions{StreamPrint: false})
+	if dumpExec.Error != nil {
+		log.Println(dumpExec.Error.Err)
+		log.Println(dumpExec.Output)
+
+	} else {
+		log.Println("Dump success")
+		log.Println(dumpExec.Output)
 	}
 
-	return file, err
+	return dumpExec.File, nil
 }

@@ -3,6 +3,9 @@ module github.com/quasarch/ethglobal-paris-2023/pg-backup-ipfs
 go 1.19
 
 require (
+	github.com/habx/pg-commands v0.6.1
+	github.com/ipfs/go-cid v0.3.2
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/afero v1.9.5
 	github.com/web3-storage/go-w3s-client v0.0.7
 )
@@ -24,7 +27,6 @@ require (
 	github.com/ipfs/go-bitfield v1.0.0 // indirect
 	github.com/ipfs/go-block-format v0.0.3 // indirect
 	github.com/ipfs/go-blockservice v0.4.0 // indirect
-	github.com/ipfs/go-cid v0.3.2 // indirect
 	github.com/ipfs/go-datastore v0.6.0 // indirect
 	github.com/ipfs/go-fetcher v1.6.1 // indirect
 	github.com/ipfs/go-ipfs-blockstore v1.2.0 // indirect
