@@ -19,6 +19,8 @@ For this example we will run the `pg-backup-ipfs` as a sidecar container for a P
 To start the cluster run `make dev-up`. This will create a `kind` cluster.
 Then to deploy that database service together with the sidecar run `make db-update`.
 
+To then shutdown run `make dev-down`.
+
 ## Architecture
 The `pg-backup-ipfs` service can be run in multiple configurations.
 Most of them will be one of the following.
