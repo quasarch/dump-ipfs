@@ -16,6 +16,8 @@ db-update:
 	kubectl apply -f deployment.yaml
 	kubectl rollout restart statefulset database --namespace=eth-system
 
+db-test-dump:
+	go run pg-backup-ipfs/main.go postgresql://world:world123@database.eth-system.svc.cluster.local:5432/world-db
 # Cluster
 dev-up-local:
 	kind create cluster \
