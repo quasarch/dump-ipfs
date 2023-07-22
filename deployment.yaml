@@ -80,11 +80,8 @@ spec:
           env:
             - name: API_KEY
               value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGJGN2RCRTU5RkUyNzEyMzMyQTIzREU2MTE3NTUzNzY5MzE2ZjFENzUiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2OTAwMjEwNzE4NTcsIm5hbWUiOiJoYWNrYXRob24ifQ.NOvJIxbLrxAQvrG0Cp7F9ltmyZjT0EI_u8e28ruYFf4
-          command:
-            - /service/pg-backup-ipfs
-          args:
-            - "*/2 * * * * *"
-            - postgresql://world:world123@localhost:5432/world-db
+          command: ["/service/pg-backup-ipfs"]
+          args: ["*/2 * * * * *", "postgresql://world:world123@localhost:5432/world-db"]
 ---
 apiVersion: v1
 kind: Service

@@ -138,12 +138,11 @@ func dumpDB(connStr string) (string, error) {
 		return "", err
 	}
 	dump, err := pg.NewDump(db)
-	dump.Format = new(string)
-	*dump.Format = "p"
-	dump.SetFileName(newFilename(db.DB))
 	if err != nil {
 		return "", err
 	}
+	dump.SetupFormat("p")
+	dump.SetFileName(newFilename(db.DB))
 	dump.EnableVerbose()
 
 	dumpExec := dump.Exec(pg.ExecOptions{StreamPrint: false})

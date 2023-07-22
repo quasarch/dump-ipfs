@@ -20,6 +20,7 @@ RUN go build
 
 # Run the Go Binary in Alpine.
 FROM alpine:3.17
+RUN apk add postgresql postgresql-contrib
 RUN addgroup -g 1000 -S agnt && \
     adduser -u 1000 -h /service -G agnt -S agnt
 COPY --from=build_pg-backup-ipfs --chown=agnt:agnt /service/pg-backup-ipfs /service/pg-backup-ipfs
