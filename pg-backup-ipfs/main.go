@@ -18,8 +18,7 @@ func main() {
 	}
 
 	// Store in Filecoin with a timestamp.
-	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGJGN2RCRTU5RkUyNzEyMzMyQTIzREU2MTE3NTUzNzY5MzE2ZjFENzUiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2OTAwMjEwNzE4NTcsIm5hbWUiOiJoYWNrYXRob24ifQ.NOvJIxbLrxAQvrG0Cp7F9ltmyZjT0EI_u8e28ruYFf4"
-	client, err := w3s.NewClient(w3s.WithToken(token))
+	client, err := w3s.NewClient(w3s.WithToken(os.Getenv("API_KEY")))
 	if err != nil {
 		panic(err)
 	}
@@ -36,13 +35,6 @@ func main() {
 	}
 
 	fmt.Printf("https://ipfs.io/ipfs/%s\n", cid)
-
-	res, err := client.Get(ctx, cid)
-	if err != nil {
-		panic(err)
-	}
-
-	res.Files()
 }
 
 func writeFileInMemory(data []byte) (fs.File, error) {
