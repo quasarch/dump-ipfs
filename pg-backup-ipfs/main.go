@@ -111,13 +111,6 @@ func insertDumpRow(db *sql.DB, timestamp int, filename string, ipfsURL string) {
 	// ensure table exists
 	createTable(db)
 	// insert a new row into the table
-	defer func(db *sql.DB) {
-		err := db.Close()
-		if err != nil {
-			log.Printf("Error closing database connection: %v", err)
-		}
-	}(db)
-
 	query := `
 		INSERT INTO ipfs_dumps (timestamp, filename, ipfs_url)
 		VALUES ($1, $2, $3)
