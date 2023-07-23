@@ -28,15 +28,17 @@ Most of them will be one of the following.
 ### As an external service
 You can run the `pg-backup-ipfs` as a standalone service that connects to multiple databases and backs them up.
 This is a simple configuration.
-<br/>
-![](docs/external.png)
+<p align="center">
+  <img src="docs/external.png" />
+</p>
 
 ### As a sidecar
 If you are running, for example, your Postgres databases in Kubernetes, chances are that you are already familiar with the sidecar pattern.
 By running `pg-backup-ipfs` as a sidecar inside your Postgres `Pod` you can perform dumps in the same network space as the Postgres *container*.
 Bellow is an illustration on how this configuration would work.
-<br/>
-![](docs/sidecar.png)
+<p align="center">
+  <img src="docs/sidecar.png" />
+</p>
 
 ## Key Rotation
 This tool supports key rotation.
