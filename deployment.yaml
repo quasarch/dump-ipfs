@@ -7,7 +7,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: database-data
-  namespace: eth-system
+  namespace: dump-system
 spec:
   accessModes:
     - ReadWriteOnce

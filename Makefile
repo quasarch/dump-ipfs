@@ -4,6 +4,9 @@ KIND_CLUSTER := starter-cluster
 
 VERSION := v0.0.1
 
+docker-build:
+	docker pull $(POSTGRES)
+
 db-apply:
 	kubectl apply -f deployment.yaml
 
@@ -14,10 +17,10 @@ db-update:
     		./pg-backup-ipfs
 	kind load docker-image pg-backup-ipfs:$(VERSION) --name $(KIND_CLUSTER)
 	kubectl apply -f deployment.yaml
-	kubectl rollout restart statefulset database --namespace=eth-system
+	kubectl rollout restart statefulset database --namespace=dump-system
 
 db-test-dump:
-	go run pg-backup-ipfs/main.go postgresql://world:world123@database.eth-system.svc.cluster.local:5432/world-db
+	go run pg-backup-ipfs/main.go postgresql://world:world123@database.dump-system.svc.cluster.local:5432/world-db
 # Cluster
 dev-up-local:
 	kind create cluster \
