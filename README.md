@@ -24,7 +24,7 @@ Then to deploy that database service together with the sidecar run `make db-upda
 To then shutdown run `make dev-down`.
 
 ## Description
-This project combines popular DBMS (for this hackathon, PostgreSQL), IPFS/Filecoin and AES encryption to deliver a backup agent that can run anywhere. It supports cron execution and multiple source databases. It can also be ran as a sidecar container in Kubernetes. It can also be integrated into decentralized compute networks such as the Akash Network.
+This project combines popular DBMS (for this hackathon, PostgreSQL), IPFS/Filecoin and AES encryption to deliver a backup agent that can run anywhere. It supports cron execution and multiple source databases. It can also be ran as a sidecar container in Kubernetes.
 
 ## How its Made
 It uses Web3 Storage as the gateway to IPFS/Filecoin. Using IPFS/Filecoin allowed us to create a trully decentralized solution to offer managed database backups as a service in our product. Another storage layer that we plan (might not be fully completed in the hackathon) is to include Delta support for enterprise-grade DB backups. It uses Kubernetes as part of its sidecar architecture. PostgreSQL is the first supported DBMS. Backups are encrypted and an hash of the used key is stored together with the backup log entry to allow for key rotation.
