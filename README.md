@@ -1,5 +1,5 @@
-# ethglobal-paris-2023
-Code from ETH Global Paris 2023 Hackathon
+# dump-ipfs
+Code developed during the ETH Global Paris 2023 Hackathon
 
 ## Dependencies
 ```sh
