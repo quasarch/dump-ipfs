@@ -1,6 +1,6 @@
 TELEPRESENCE := datawire/tel2:2.13.1
 POSTGRES     := ghusta/postgres-world-db:2.10
-KIND_CLUSTER := ethglobal-starter-cluster
+KIND_CLUSTER := starter-cluster
 
 VERSION := v0.0.1
 

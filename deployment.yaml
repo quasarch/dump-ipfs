@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: eth-system
+  name: dump-system
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -19,7 +19,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: dump-ipfs-key
-  namespace: eth-system
+  namespace: dump-system
 type: Opaque
 stringData:
   ENCRYPTION_KEY: "7Wky+OEIsaZXzJhTejN2OqYWJ6TBa64h"
@@ -28,7 +28,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: database
-  namespace: eth-system
+  namespace: dump-system
 spec:
   selector:
     matchLabels:
@@ -101,7 +101,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: database-service
-  namespace: eth-system
+  namespace: dump-system
 spec:
   type: ClusterIP
   selector:

@@ -1,4 +1,4 @@
-module github.com/quasarch/ethglobal-paris-2023/pg-fetch-ipfs
+module github.com/quasarch/dump-ipfs/pg-fetch-ipfs
 
 go 1.20
 

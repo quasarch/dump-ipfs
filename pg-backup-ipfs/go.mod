@@ -1,4 +1,4 @@
-module github.com/quasarch/ethglobal-paris-2023/pg-backup-ipfs
+module github.com/quasarch/dump-ipfs/pg-backup-ipfs
 
 go 1.19
 
